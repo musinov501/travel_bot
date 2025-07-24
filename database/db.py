@@ -20,6 +20,7 @@ class Database:
 
         return result
 
+
     def create_table_users(self):
             sql = '''CREATE TABLE IF NOT EXISTS users(
                 telegram_id INTEGER NOT NULL UNIQUE,
@@ -35,10 +36,21 @@ class Database:
         self.execute(sql, telegram_id, commit=True)
 
 
-    def update_lang(self, lang, telegram_id):
+    def  update_lang(self, lang, telegram_id):
         sql = '''UPDATE users SET lang = ? WHERE telegram_id = ?'''
         self.execute(sql, lang, telegram_id, commit=True)
 
     def get_user(self, telegram_id):
         sql = '''SELECT * FROM users WHERE telegram_id = ?'''
         return self.execute(sql, telegram_id, fetchone=True)
+
+
+    def get_lang(self, telegram_id):
+        sql = '''SELECT lang FROM users WHERE telegram_id = ?'''
+        return self.execute(sql, telegram_id, fetchone=True)[0]
+
+
+
+    def save_phone_number_and_full_name(self, full_name, phone_number, telegram_id):
+        sql =  '''UPDATE users SET full_name = ?, phone_number = ? WHERE telegram_id = ?'''
+        self.execute(sql, full_name, phone_number, telegram_id, commit=True)
