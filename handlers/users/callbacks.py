@@ -4,7 +4,7 @@ from data.loader import bot, db
 from telebot.types import CallbackQuery, Message, ReplyKeyboardRemove
 from config import TEXTS
 from keyboards.dafault import phone_button, make_buttons
-
+from keyboards.inline import travel_buttons
 
 REGISTER = {}
 
@@ -61,4 +61,10 @@ def get_phone(message: Message):
         bot.register_next_step_handler(msg, get_phone)
 
 
-
+@bot.callback_query_handler(func=lambda call: "travel_" in call.data)
+def reaction_to_travel_(call: CallbackQuery):
+    chat_id = call.message.chat.id
+    from_user_id = call.from_user.id
+    travel_id = int(call.data.split("_")[-1])
+    lang= db.get_lang(from_user_id)
+    print(db.select_travels_with_images(travel_id, lang))

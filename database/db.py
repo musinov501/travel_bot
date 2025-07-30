@@ -11,12 +11,14 @@ class Database:
             cursor.execute(sql, args)
 
             result = None
-            if commit:
-                db.commit()
-            elif fetchone:
+
+            if fetchone:
                 result = cursor.fetchone()
             elif fetchall:
                 result = cursor.fetchall()
+
+            if commit:
+                db.commit()
 
         return result
 
@@ -59,16 +61,23 @@ class Database:
     def create_table_travels(self):
         sql = '''CREATE TABLE IF NOT EXISTS travels(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            price REAL,
+            name_uz TEXT,
+            name_ru TEXT,
+            name_en TEXT,
+            price INTEGER,
             days INTEGER
             )
         '''
         self.execute(sql, commit=True)
 
-    def insert_travel(self, name, price, days):
-        sql = '''INSERT INTO travels(name, price, days) VALUES (?, ?, ?)'''
-        self.execute(sql, name , price, days, commit=True)
+
+    def drop_table_travels(self):
+        sql = '''DROP TABLE IF EXISTS travels'''
+        self.execute(sql, commit=True)
+
+    def insert_travel(self, name_uz, name_ru, name_en, price, days):
+        sql = '''INSERT INTO travels(name_uz, name_ru, name_en, price, days) VALUES (?, ?, ?, ?, ?) RETURNING id'''
+        return self.execute(sql, name_uz, name_ru, name_en, price, days, commit=True, fetchone=True)[0]
 
     def create_table_images(self):
         sql = '''CREATE TABLE IF NOT EXISTS images(
@@ -81,10 +90,16 @@ class Database:
 
     def insert_image(self, image: str, travel_id: int):
         sql = '''INSERT INTO images(image, travel_id) VALUES (?, ?)'''
-        self.execute(image, travel_id, commit=True)
+        self.execute(sql, image, travel_id, commit=True)
 
 
 
 
+    def select_travels(self, lang):
+        sql = f'''SELECT id, name_{lang} FROM travels'''
+        return self.execute(sql, fetchall=True)
 
 
+    def select_travels_with_images(self,travel_id, lang):
+        sql = f'''SELECT  travels.id, travels.name_{lang}, images.id, images.image FROM travels JOIN images ON images.travel_id = travels.id WHERE travels.id = ?'''
+        return self.execute(sql,travel_id, fetchall=True )

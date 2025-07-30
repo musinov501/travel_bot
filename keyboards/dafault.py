@@ -19,7 +19,7 @@ def make_buttons(names: list, row_width: int = 2, lang: str = 'uz', back: bool =
 
 
     if admin_id in ADMINS:
-        btn = KeyboardButton("Admin buyruqlari")
+        btn = KeyboardButton("👮🏻‍♂️Admin buyruqlari")
         markup.add(btn)
 
 

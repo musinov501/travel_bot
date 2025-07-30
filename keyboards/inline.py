@@ -10,3 +10,10 @@ def lang_buttons():
     return markup
 
 
+def travel_buttons(travels_list):
+    markup = InlineKeyboardMarkup(row_width=2)
+    for travel in travels_list:
+        travel_id, travel_name = travel
+        btn = InlineKeyboardButton(travel_name, callback_data=f'travel_{travel_id}')
+        markup.add(btn)
+    return markup
