@@ -22,7 +22,7 @@ class Database:
 
         return result
 
-
+    #Registration part-> creating table of users
     def create_table_users(self):
             sql = '''CREATE TABLE IF NOT EXISTS users(
                 telegram_id INTEGER NOT NULL UNIQUE,
@@ -49,7 +49,11 @@ class Database:
 
     def get_lang(self, telegram_id):
         sql = '''SELECT lang FROM users WHERE telegram_id = ?'''
-        return self.execute(sql, telegram_id, fetchone=True)[0]
+        result = self.execute(sql, telegram_id, fetchone=True)
+
+        if result is None:
+            return 'uz'
+        return result[0]
 
 
 
@@ -58,6 +62,7 @@ class Database:
         self.execute(sql, full_name, phone_number, telegram_id, commit=True)
 
 
+    #Adding table of trips
     def create_table_travels(self):
         sql = '''CREATE TABLE IF NOT EXISTS travels(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -79,6 +84,7 @@ class Database:
         sql = '''INSERT INTO travels(name_uz, name_ru, name_en, price, days) VALUES (?, ?, ?, ?, ?) RETURNING id'''
         return self.execute(sql, name_uz, name_ru, name_en, price, days, commit=True, fetchone=True)[0]
 
+    # Adding table of images
     def create_table_images(self):
         sql = '''CREATE TABLE IF NOT EXISTS images(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -93,6 +99,15 @@ class Database:
         self.execute(sql, image, travel_id, commit=True)
 
 
+    def count_images(self, travel_id):
+        sql = '''SELECT count(id) FROM images WHERE travel_id = ?'''
+        return self.execute(sql, travel_id, fetchone=True)
+
+
+    def select_image_by_pagination(self, travel_id, offset, limit):
+        sql = '''SELECT id, image FROM images WHERE travel_id = ? LIMIT ?, ?'''
+        return self.execute(sql, travel_id, offset, limit, fetchone=True)
+
 
 
     def select_travels(self, lang):
@@ -100,6 +115,13 @@ class Database:
         return self.execute(sql, fetchall=True)
 
 
+    def select_travel_text(self, travel_id, lang):
+        sql = f'''SELECT name_{lang}, price, days FROM travels WHERE id = ?'''
+        return self.execute(sql, travel_id, fetchone=True)
+
+
     def select_travels_with_images(self,travel_id, lang):
         sql = f'''SELECT  travels.id, travels.name_{lang}, images.id, images.image FROM travels JOIN images ON images.travel_id = travels.id WHERE travels.id = ?'''
         return self.execute(sql,travel_id, fetchall=True )
+
+

@@ -2,7 +2,8 @@ from telebot.types import Message, ReplyKeyboardRemove
 from data.loader import bot, db
 
 from keyboards.dafault import make_buttons
-from config import ADMINS
+from config import ADMINS, TEXTS
+
 
 
 admin_buttons_names = [
@@ -118,4 +119,12 @@ def save_travel(message: Message):
         msg = bot.send_message(chat_id, "Sayohat rasmi linkini yuboring", reply_markup=ReplyKeyboardRemove())
         bot.register_next_step_handler(msg, get_image_travel)
 
+
+@bot.message_handler(regexp="⬅️Ortga")
+def reaction_to_back(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    lang = db.get_lang(from_user_id)
+    names_buttons = TEXTS[lang][101]
+    bot.send_message(chat_id, TEXTS[lang][4], reply_markup=make_buttons(names_buttons, admin_id=from_user_id))
 

@@ -21,7 +21,10 @@ def reaction_to_packages(message: Message):
     elif message.text == TEXTS[lang][101][0]:
         travels_list = db.select_travels(lang)
         text = TEXTS[lang][8]
-        bot.send_message(chat_id, text , reply_markup=make_buttons(travels_list))
+        bot.send_message(chat_id, text , reply_markup=travel_buttons(travels_list))
+    elif message.text == TEXTS[lang][101][5]:
+        msg = bot.send_message(chat_id, "Loc yuboring")
+        bot.register_next_step_handler(msg, get_location)
 
 
 def get_settings(message: Message):
@@ -41,6 +44,7 @@ def get_settings(message: Message):
 
 
 
+
 @bot.message_handler(func=lambda message: message.text == TEXTS[db.get_lang(message.from_user.id)][102][1])
 def reaction_to_re_registration(message: Message):
     chat_id = message.chat.id
@@ -51,6 +55,13 @@ def reaction_to_re_registration(message: Message):
     bot.register_next_step_handler(msg, get_name)
 
 
+
+@bot.message_handler(content_types=['location'])
+def get_location(message: Message):
+    chat_id = message.chat.id
+    lat = message.location.latitude
+    long = message.location.longitude
+    bot.send_location(chat_id, lat, long)
 
 
 
