@@ -13,7 +13,7 @@ TEXTS = {
         5: "Til o'zgartirildi!!",
         6: "Sozlamani tanlang!",
         7: "Tilni tanlang",
-        8: "Sayohatlar ro'yxati",
+        8: "🧳 Sayohatlar ro'yxati👇👇",
         100: "📱Kontaktni yuborish",
         101: ["🗺 Sayohatlarni ko‘rish", "🏛 Mashhur joylar", "📅 Ekskursiya jadvali", "💬 Yo‘l ko‘rsatuvchi bilan aloqa", "💰 Narxlar", "📍 Yaqin joylar", "🧳 Sayohat rejamni tuz", "ℹ️ Biz haqimizda", "⚙️Sozlamalar"
 ],
@@ -27,7 +27,7 @@ TEXTS = {
         5: "Язык изменен!!",
         6: "Выберите настройки!",
         7: "Выберите язык",
-        8: "Список поездок",
+        8: "🧳 Список поездок👇👇",
         100: "📱Отправить контакт",
         101: ["🗺 Просмотр путешествий", "🏛 Знаменитые места", "📅 Расписание экскурсий", "💬 Связь с гидом", "💰 Цены", "📍 Близлежащие места", "🧳 Составьте план поездки", "ℹ️ О нас", "⚙️Настройки"],
         102: ["🌐Изменить язык", "®️Перерегистрация"]
@@ -40,7 +40,7 @@ TEXTS = {
         5: "the language is changed!!!",
         6: "Select a setting",
         7: "Select language",
-        8: "List of trips",
+        8: "🧳 List of trips👇👇",
         100: "📱Share contact",
         101: ["🗺 View travels", "🏛 Famous places", "📅 Excursion schedule", "💬 Contact with the guide", "💰 Prices", "📍 Nearby places", "🧳 Plan my trip", "ℹ️ About us", "⚙️Settings"],
         102: ["🌐Change the language", "®️Re-registration"]

@@ -12,5 +12,6 @@ if __name__ == '__main__':
     # db.drop_table_travels()
     db.create_table_travels()
     db.create_table_images()
+    db.create_table_famous_places()
     bot.remove_webhook()
     bot.infinity_polling()

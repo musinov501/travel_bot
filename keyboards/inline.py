@@ -34,7 +34,7 @@ def travel_pagination_buttons(travel_id: int, page: int = 1):
     next = InlineKeyboardButton("⏭️ Next", callback_data=f"next_image_{travel_id}")
 
     info = InlineKeyboardButton("ℹ️Info", callback_data=f"info_{travel_id}")
-    back = InlineKeyboardButton("🔙Back", callback_data=f"back_to_{travel_id}")
+    back = InlineKeyboardButton("🔙Back", callback_data=f"back_to_travels")
 
     if page <= 1:
         markup.add(current_page, next)
@@ -49,7 +49,21 @@ def travel_pagination_buttons(travel_id: int, page: int = 1):
 
 
 
-
+def famous_places_buttons(lang):
+    places = db.select_famous_places(lang)
+    markup = InlineKeyboardMarkup(row_width=1)
+    
+    
+    
+    for place in places:
+        id_, name, _, _ = place
+        btn = InlineKeyboardButton(name, callback_data = f"famous_{id_}")
+        markup.add(btn)
+        
+        
+    back = InlineKeyboardButton("🔙Back", callback_data="back_to_main")
+    markup.add(back)
+    return markup
 
 
 

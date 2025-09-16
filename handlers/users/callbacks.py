@@ -127,19 +127,51 @@ def reaction_to_info_(call: CallbackQuery):
 
 
 
-
-@bot.callback_query_handler(func=lambda call: "back_to_" in call.data)
-def reaction_to_info_(call: CallbackQuery):
+@bot.callback_query_handler(func=lambda call: call.data == "back_to_main")
+def back_to_main(call: CallbackQuery):
     chat_id = call.message.chat.id
-    from_user_id = call.message.from_user.id
+    from_user_id = call.from_user.id
     lang = db.get_lang(from_user_id)
+    btn_names = TEXTS[lang][101]
+    text = TEXTS[lang][4]
     bot.delete_message(chat_id, call.message.message_id)
+    bot.send_message(chat_id, text, reply_markup=make_buttons(btn_names))
+
+
+
+@bot.callback_query_handler(func=lambda call: call.data == "back_to_travels")
+def back_to_travels(call: CallbackQuery):
+    chat_id = call.message.chat.id
+    from_user_id = call.from_user.id
+    lang = db.get_lang(from_user_id)
     travels_list = db.select_travels(lang)
     text = TEXTS[lang][8]
+    bot.delete_message(chat_id, call.message.message_id)
     bot.send_message(chat_id, text, reply_markup=travel_buttons(travels_list))
 
 
 
+@bot.callback_query_handler(func=lambda call: call.data.startswith("famous_"))
+def famous_place_info(call: CallbackQuery):
+    chat_id = call.message.chat.id
+    place_id = int(call.data.split("_")[1])
+    lang = db.get_lang(call.from_user.id)
+    
+    
+    places = db.select_famous_places(lang)
+    place = None
+    for p in places:
+        if p[0] == place_id:
+            place = p
+            break
+        
+    if place is None:
+        return
+    
+    
+    _, name, description, image = place
+    text =  f"🏛 <b>{name}</b>\n\n{description}"
+    bot.send_photo(chat_id, image, caption=text)
 
 
 
