@@ -125,9 +125,12 @@ class Database:
         return self.execute(sql,travel_id, fetchall=True )
 
 
+<<<<<<< HEAD
         # ===============================
     # FAMOUS PLACES
     # ===============================
+=======
+>>>>>>> 2ad76f62c3b291b7635edc9cb8248f41500a48c8
     def create_table_famous_places(self):
         sql = '''CREATE TABLE IF NOT EXISTS famous_places(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -138,6 +141,7 @@ class Database:
             description_ru TEXT,
             description_en TEXT,
             image TEXT
+<<<<<<< HEAD
         )'''
         self.execute(sql, commit=True)
 
@@ -186,5 +190,21 @@ class Database:
         return self.execute(sql, excursion_id, fetchone=True)
 
 
+=======
+        )
+        
+        '''
+        self.execute(sql, commit= True)
+        
+    def insert_famous_place(self, name_uz, name_ru, name_en, description_uz, description_ru, description_en, image):
+        sql = '''INSERT INTO famous_places(name_uz, name_ru, name_en, description_uz, description_ru, description_en, image)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        '''
+        self.execute(sql, name_uz, name_ru, name_en, description_uz, description_ru, description_en, image, commit=True )
+        
+    def select_famous_places(self, lang):
+        sql = f'''SELECT id, name_{lang}, description_{lang}, image FROM famous_places'''
+        return self.execute(sql, fetchall=True)
+>>>>>>> 2ad76f62c3b291b7635edc9cb8248f41500a48c8
     
     

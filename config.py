@@ -14,7 +14,10 @@ TEXTS = {
         6: "Sozlamani tanlang!",
         7: "Tilni tanlang",
         8: "🧳 Sayohatlar ro'yxati👇👇",
+<<<<<<< HEAD
         9: "Kartada ko'rish",
+=======
+>>>>>>> 2ad76f62c3b291b7635edc9cb8248f41500a48c8
         100: "📱Kontaktni yuborish",
         101: ["🗺 Sayohatlarni ko‘rish", "🏛 Mashhur joylar", "📅 Ekskursiya jadvali", "💬 Yo‘l ko‘rsatuvchi bilan aloqa", "💰 Narxlar", "📍 Yaqin joylar", "🧳 Sayohat rejamni tuz", "ℹ️ Biz haqimizda", "⚙️Sozlamalar"
 ],
@@ -29,7 +32,10 @@ TEXTS = {
         6: "Выберите настройки!",
         7: "Выберите язык",
         8: "🧳 Список поездок👇👇",
+<<<<<<< HEAD
         9: "Просмотр на карте",
+=======
+>>>>>>> 2ad76f62c3b291b7635edc9cb8248f41500a48c8
         100: "📱Отправить контакт",
         101: ["🗺 Просмотр путешествий", "🏛 Знаменитые места", "📅 Расписание экскурсий", "💬 Связь с гидом", "💰 Цены", "📍 Близлежащие места", "🧳 Составьте план поездки", "ℹ️ О нас", "⚙️Настройки"],
         102: ["🌐Изменить язык", "®️Перерегистрация"]
@@ -43,7 +49,10 @@ TEXTS = {
         6: "Select a setting",
         7: "Select language",
         8: "🧳 List of trips👇👇",
+<<<<<<< HEAD
         9: "View on map",
+=======
+>>>>>>> 2ad76f62c3b291b7635edc9cb8248f41500a48c8
         100: "📱Share contact",
         101: ["🗺 View travels", "🏛 Famous places", "📅 Excursion schedule", "💬 Contact with the guide", "💰 Prices", "📍 Nearby places", "🧳 Plan my trip", "ℹ️ About us", "⚙️Settings"],
         102: ["🌐Change the language", "®️Re-registration"]

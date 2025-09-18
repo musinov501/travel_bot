@@ -18,8 +18,11 @@ admin_buttons_names = [
 TRAVEL = {}
 FAMOUS = {}
 
+<<<<<<< HEAD
 EXCURSION = {}
 
+=======
+>>>>>>> 2ad76f62c3b291b7635edc9cb8248f41500a48c8
 
 
 @bot.message_handler(func=lambda message: message.text == "👮🏻‍♂️Admin buyruqlari")
@@ -215,6 +218,7 @@ def get_image_famous(message: Message):
     
 
 
+<<<<<<< HEAD
 @bot.message_handler(func=lambda message: message.text == "➕ Ekskursiya jadvalini qo'shish")
 def reaction_to_add_excursion(message: Message):
     chat_id = message.chat.id
@@ -332,6 +336,15 @@ def get_excursion_image(message: Message):
     del EXCURSION[from_user_id]
     bot.send_message(chat_id, "Ekskursiya muvaffaqiyatli saqlandi!", reply_markup=make_buttons(admin_buttons_names, back=True))
         
+=======
+
+
+
+
+
+
+
+>>>>>>> 2ad76f62c3b291b7635edc9cb8248f41500a48c8
 
 @bot.message_handler(regexp="⬅️Ortga")
 def reaction_to_back(message: Message):
