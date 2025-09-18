@@ -52,6 +52,61 @@ def travel_pagination_buttons(travel_id: int, page: int = 1):
 
 
 
+def excursions_buttons(lang='uz'):
+    
+    if lang not in ('uz', 'ru', 'en'):
+        lang = 'uz'
+
+    
+    excursions = db.select_excursions(lang)
+    
+    markup = InlineKeyboardMarkup()
+    
+    if not excursions:
+       
+        markup.add(InlineKeyboardButton("No excursions available", callback_data="no_action"))
+        return markup
+    
+    for exc in excursions:
+        exc_id = exc[0]
+        exc_name = exc[1]  # name_{lang} from DB
+        exc_date = exc[2]  # date
+        exc_time = exc[3]  # time
+        button_text = f"{exc_name} | {exc_date} {exc_time}"
+        markup.add(
+            InlineKeyboardButton(button_text, callback_data=f"excursion_{exc_id}")
+        )
+    
+    
+    markup.add(InlineKeyboardButton("⬅️Back", callback_data="back_to_menu"))
+    
+    return markup
+
+def famous_places_buttons(lang = 'uz'):
+    if lang not in ('uz', 'ru', 'en'):
+        lang = 'uz'
+
+    
+    places = db.select_famous_places(lang)
+    
+    markup = InlineKeyboardMarkup()
+    
+    if not places:
+        
+        markup.add(InlineKeyboardButton("No famous places available", callback_data="no_action"))
+        return markup
+    
+    for place in places:
+        place_id = place[0]
+        place_name = place[1]  
+        markup.add(
+            InlineKeyboardButton(place_name, callback_data=f"famous_{place_id}")
+        )
+    
+   
+    markup.add(InlineKeyboardButton("⬅️Back", callback_data="back_to_menu"))
+    
+    return markup
 
 
 

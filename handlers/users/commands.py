@@ -1,9 +1,17 @@
-from telebot.types import Message
+from telebot.types import Message, BotCommand
 from data.loader import bot, db
 from keyboards.inline import lang_buttons
 from config import TEXTS
 from .callbacks import get_name
 from keyboards.dafault import make_buttons
+
+
+bot.set_my_commands([
+    BotCommand('start', 'Botni ishga tushirish'),
+    BotCommand('help', 'Yordam')
+
+])
+
 
 
 @bot.message_handler(commands=["start"])

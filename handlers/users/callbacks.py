@@ -4,7 +4,7 @@ from data.loader import bot, db
 from telebot.types import CallbackQuery, Message, ReplyKeyboardRemove
 from config import TEXTS
 from keyboards.dafault import phone_button, make_buttons
-from keyboards.inline import travel_buttons, travel_pagination_buttons
+from keyboards.inline import travel_buttons, travel_pagination_buttons, excursions_buttons
 
 REGISTER = {}
 
@@ -139,7 +139,64 @@ def reaction_to_info_(call: CallbackQuery):
     bot.send_message(chat_id, text, reply_markup=travel_buttons(travels_list))
 
 
+@bot.callback_query_handler(func=lambda call: call.data.startswith("excursion_"))
+def show_excursion(call: CallbackQuery):
+    chat_id = call.message.chat.id
+    lang = db.get_lang(call.from_user.id)
+    excursion_id = int(call.data.split("_")[1])
+    
+    exc = db.select_excursion_by_id(excursion_id, lang)
+    if not exc:
+        bot.send_message(chat_id, "❌ Excursion not found.")
+        return
+
+    
+    location_link = f"https://www.google.com/maps?q={exc[4]},{exc[5]}" if exc[4] and exc[5] else ""
+    location_text = f"\n📍 <a href='{location_link}'>{TEXTS[lang][9]}</a>" if location_link else ""
+    
+    caption = (
+        f"🏞 <b>{exc[1]}</b>\n"
+        f"🗓 {exc[2]}\n"
+        f"⏰ {exc[3]}\n\n"
+        f"{exc[6]}"
+        f"{location_text}"
+    )
+
+    # Send photo with caption
+    if exc[7]:
+        try:
+            bot.send_photo(chat_id, photo=exc[7], caption=caption, parse_mode="HTML")
+        except Exception:
+            bot.send_message(chat_id, caption, parse_mode="HTML")
+    else:
+        bot.send_message(chat_id, caption, parse_mode="HTML")
 
 
 
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith("famous_"))
+def show_famous_place(call: CallbackQuery):
+    chat_id = call.message.chat.id
+    lang = db.get_lang(call.from_user.id)
+    place_id = int(call.data.split("_")[1])
+    
+    place = db.select_famous_places(lang)
+    for p in place:
+        if p[0] == place_id:
+            text = f"🏛 {p[1]}\n\n{p[2]}"
+            bot.edit_message_text(
+                chat_id=chat_id,
+                message_id=call.message.message_id,
+                text=text,
+                parse_mode="Markdown",
+                reply_markup=None
+            )
+
+
+@bot.callback_query_handler(func=lambda call: call.data == "back_to_menu")
+def back_to_menu(call: CallbackQuery):
+    chat_id = call.message.chat.id
+    lang = db.get_lang(call.from_user.id)
+    markup = excursions_buttons(lang) 
+    bot.edit_message_text(chat_id, call.message.message_id, TEXTS[lang][101][1], reply_markup=markup)
 

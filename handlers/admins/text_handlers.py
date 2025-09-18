@@ -9,11 +9,17 @@ from config import ADMINS, TEXTS
 admin_buttons_names = [
         "➕ Sayohatlar qo'shish",
         "➕ Mashxur joylar qo'shish",
-        "➕ Ekskursiya jadvali"
+        "➕ Ekskursiya jadvalini qo'shish",
+        "➕ Narxlarni qo'shish"
     ]
 
 
+
 TRAVEL = {}
+FAMOUS = {}
+
+EXCURSION = {}
+
 
 
 @bot.message_handler(func=lambda message: message.text == "👮🏻‍♂️Admin buyruqlari")
@@ -120,6 +126,213 @@ def save_travel(message: Message):
         bot.register_next_step_handler(msg, get_image_travel)
 
 
+
+
+@bot.message_handler(func= lambda message: message.text == "➕ Mashxur joylar qo'shish")
+def reaction_to_add_famous_place(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+
+    if from_user_id in ADMINS:
+        msg = bot.send_message(chat_id, "Mashhur joy nomini o'zbek tilida kiriting", reply_markup=ReplyKeyboardRemove())
+        bot.register_next_step_handler(msg, get_name_uz_famous)
+        
+    
+
+def get_name_uz_famous(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    FAMOUS[from_user_id] = {
+        'name_uz': message.text
+    }
+    msg = bot.send_message(chat_id, "Mashhur joy nomini ruz tilida kiriting")
+    bot.register_next_step_handler(msg, get_name_ru_famous)
+
+
+def get_name_ru_famous(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    FAMOUS[from_user_id]['name_ru'] = message.text
+    msg = bot.send_message(chat_id, "Mashhur joy nomini ingliz tilida kiriting")
+    bot.register_next_step_handler(msg, get_name_en_famous)
+    
+
+def get_name_en_famous(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    FAMOUS[from_user_id]['name_en'] = message.text
+    msg = bot.send_message(chat_id, "Mashhur joy tavsifini o'zbek tilida kiriting")
+    bot.register_next_step_handler(msg, get_description_uz_famous)
+    
+    
+
+def get_description_uz_famous(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    FAMOUS[from_user_id]['description_uz'] = message.text
+    msg = bot.send_message(chat_id, "Mashhur joy tavsifini rus tilida kiriting")
+    bot.register_next_step_handler(msg, get_description_ru_famous)
+
+    
+def get_description_ru_famous(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    FAMOUS[from_user_id]['description_ru'] = message.text
+    msg = bot.send_message(chat_id, "Mashhur joy tavsifini ingliz tilida kiriting")
+    bot.register_next_step_handler(msg, get_description_en_famous)
+    
+    
+def get_description_en_famous(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    FAMOUS[from_user_id]['description_en'] = message.text
+    msg = bot.send_message(chat_id, "Mashhur joy rasmi linkini yuboring")
+    bot.register_next_step_handler(msg, get_image_famous)
+    
+
+def get_image_famous(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    
+    if not FAMOUS[from_user_id].get('image'):
+        FAMOUS[from_user_id]['image'] = message.text
+        
+        
+    data = FAMOUS[from_user_id]
+    db.insert_famous_place(
+        data['name_uz'], 
+        data['name_ru'],
+        data['name_en'],
+        data['description_uz'],
+        data['description_ru'],
+        data['description_en'],
+        data['image']
+    )
+    
+    del FAMOUS[from_user_id]
+    bot.send_message(chat_id, "Mashhur joy muvaffaqiyatli saqlandi!!!", reply_markup=make_buttons(admin_buttons_names, back=True))
+    
+    
+
+
+@bot.message_handler(func=lambda message: message.text == "➕ Ekskursiya jadvalini qo'shish")
+def reaction_to_add_excursion(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    if from_user_id in ADMINS:
+        msg = bot.send_message(chat_id, "Ekskursiya nomini o'zbek tilida kiriting: ", reply_markup = ReplyKeyboardRemove())
+        bot.register_next_step_handler(msg, get_excursion_name_uz)
+        
+
+
+def get_excursion_name_uz(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    EXCURSION[from_user_id] = {
+        'name_uz': message.text
+    }
+    msg = bot.send_message(chat_id, "Ekskursiya nomini rus tilida kiriting:")
+    bot.register_next_step_handler(msg, get_excursion_name_ru)
+    
+
+
+def get_excursion_name_ru(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    EXCURSION[from_user_id]['name_ru'] = message.text
+    msg = bot.send_message(chat_id, "Ekskursiya nomini ingliz tilida kiriting:")
+    bot.register_next_step_handler(msg, get_excursion_name_en)
+    
+
+
+def get_excursion_name_en(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    EXCURSION[from_user_id]['name_en'] = message.text
+    msg = bot.send_message(chat_id, "Ekskursiya tavsifini o'zbek tilida kiriting:")
+    bot.register_next_step_handler(msg, get_excursion_description_uz)
+
+def get_excursion_description_uz(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    EXCURSION[from_user_id]['description_uz'] = message.text
+    msg = bot.send_message(chat_id, "Ekskursiya tavsifini rus tilida kiriting:")
+    bot.register_next_step_handler(msg, get_excursion_description_ru)
+
+def get_excursion_description_ru(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    EXCURSION[from_user_id]['description_ru'] = message.text
+    msg = bot.send_message(chat_id, "Ekskursiya tavsifini ingliz tilida kiriting:")
+    bot.register_next_step_handler(msg, get_excursion_description_en)
+    
+    
+
+def get_excursion_description_en(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    EXCURSION[from_user_id]['description_en'] = message.text
+    msg = bot.send_message(chat_id, "Ekskursiya kunini kiriting: (YYYY-MM-DD):")
+    bot.register_next_step_handler(msg, get_excursion_day)
+    
+    
+def get_excursion_day(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    EXCURSION[from_user_id]['date'] = message.text
+    msg = bot.send_message(chat_id, "Ekskursiya vaqtini kiriting (HH:MM):")
+    bot.register_next_step_handler(msg, get_excursion_time)
+    
+
+def get_excursion_time(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    EXCURSION[from_user_id]['time'] = message.text
+    msg = bot.send_message(chat_id, "Ekskursiya joyini yuboring (geolocation):")
+    bot.register_next_step_handler(msg, get_excursion_location)
+    
+    
+def get_excursion_location(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    
+    if message.location:
+        EXCURSION[from_user_id]['lat'] = message.location.latitude
+        EXCURSION[from_user_id]['lon'] = message.location.longitude
+        msg = bot.send_message(chat_id, "Ekskursiya rasmini yuboring (link yoki fayl). Yana rasm qo'shasizmi? Yes / No")
+        bot.register_next_step_handler(msg, get_excursion_image)
+        
+    else:
+        msg = bot.send_message(chat_id, "Iltimos, joyni geolocation orqali yuboring!")
+        bot.register_next_step_handler(msg, get_excursion_location)
+
+        
+
+def get_excursion_image(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    
+    EXCURSION[from_user_id]['image'] = message.text  # store single image
+   
+    data = EXCURSION[from_user_id]
+    db.insert_excursion(
+            data['name_uz'],
+            data['name_en'],
+            data['name_ru'],
+            data['date'],
+            data['time'],
+            data['lat'],
+            data['lon'],
+            data['description_uz'],
+            data['description_en'],
+            data['description_ru'],
+            data['image']
+    )
+
+    del EXCURSION[from_user_id]
+    bot.send_message(chat_id, "Ekskursiya muvaffaqiyatli saqlandi!", reply_markup=make_buttons(admin_buttons_names, back=True))
+        
+
 @bot.message_handler(regexp="⬅️Ortga")
 def reaction_to_back(message: Message):
     chat_id = message.chat.id
@@ -127,4 +340,8 @@ def reaction_to_back(message: Message):
     lang = db.get_lang(from_user_id)
     names_buttons = TEXTS[lang][101]
     bot.send_message(chat_id, TEXTS[lang][4], reply_markup=make_buttons(names_buttons, admin_id=from_user_id))
+
+
+
+
 
