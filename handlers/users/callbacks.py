@@ -4,7 +4,7 @@ from data.loader import bot, db
 from telebot.types import CallbackQuery, Message, ReplyKeyboardRemove
 from config import TEXTS
 from keyboards.dafault import phone_button, make_buttons
-from keyboards.inline import travel_buttons, travel_pagination_buttons, excursions_buttons
+from keyboards.inline import travel_buttons, travel_pagination_buttons, excursions_buttons, excursion_detail_buttons
 
 REGISTER = {}
 
@@ -155,16 +155,18 @@ def show_excursion(call: CallbackQuery):
     chat_id = call.message.chat.id
     lang = db.get_lang(call.from_user.id)
     excursion_id = int(call.data.split("_")[1])
-    
+
     exc = db.select_excursion_by_id(excursion_id, lang)
     if not exc:
         bot.send_message(chat_id, "❌ Excursion not found.")
         return
 
     
+    guide = db.select_guide_by_excursion(excursion_id)
+
     location_link = f"https://www.google.com/maps?q={exc[4]},{exc[5]}" if exc[4] and exc[5] else ""
     location_text = f"\n📍 <a href='{location_link}'>{TEXTS[lang][9]}</a>" if location_link else ""
-    
+
     caption = (
         f"🏞 <b>{exc[1]}</b>\n"
         f"🗓 {exc[2]}\n"
@@ -173,14 +175,16 @@ def show_excursion(call: CallbackQuery):
         f"{location_text}"
     )
 
-    # Send photo with caption
+    markup = excursion_detail_buttons(excursion_id, guide)
+
     if exc[7]:
         try:
-            bot.send_photo(chat_id, photo=exc[7], caption=caption, parse_mode="HTML")
+            bot.send_photo(chat_id, photo=exc[7], caption=caption, parse_mode="HTML", reply_markup=markup)
         except Exception:
-            bot.send_message(chat_id, caption, parse_mode="HTML")
+            bot.send_message(chat_id, caption, parse_mode="HTML", reply_markup=markup)
     else:
-        bot.send_message(chat_id, caption, parse_mode="HTML")
+        bot.send_message(chat_id, caption, parse_mode="HTML", reply_markup=markup)
+
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("famous_"))
 def famous_place_info(call: CallbackQuery):
