@@ -20,6 +20,8 @@ FAMOUS = {}
 
 EXCURSION = {}
 
+PRICES = {}
+
 
 
 @bot.message_handler(func=lambda message: message.text == "👮🏻‍♂️Admin buyruqlari")
@@ -331,6 +333,128 @@ def get_excursion_image(message: Message):
 
     del EXCURSION[from_user_id]
     bot.send_message(chat_id, "Ekskursiya muvaffaqiyatli saqlandi!", reply_markup=make_buttons(admin_buttons_names, back=True))
+ 
+ 
+
+
+@bot.message_handler(func=lambda message: message.text == "➕ Narxlarni qo'shish")
+def reaction_to_add_prices(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    if from_user_id in ADMINS:
+        msg = bot.send_message(chat_id, "Narx qaysi turga tegishli?\n\n✈️ Sayohat\n🗺 Ekskursiya\n👨‍💼 Guide",
+                               reply_markup=make_buttons(["Sayohat", "Ekskursiya", "Guide"], back=True))
+        bot.register_next_step_handler(msg, choose_price_category)
+        
+        
+def choose_price_category(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    
+    
+    if message.text == "Sayohat":
+        PRICES[from_user_id] = {
+            'type': 'travel'
+        }
+        msg = bot.send_message(chat_id, "Sayohat ID sini kiriting:")
+        bot.register_next_step_handler(msg, get_price_travel_id)
+        
+    elif message.text == "Ekskursiya":
+        PRICES[from_user_id] = {
+            'type': 'excursion'
+        }
+        msg = bot.send_message(chat_id, "Ekskursiya ID sini kiriting:")
+        bot.register_next_step_handler(msg, get_price_excursion_id)
+
+    elif message.text == "Guide":
+        PRICES[from_user_id] = {
+            'type': 'guide'
+        }
+        msg = bot.send_message(chat_id, "Guide ID sini kiriting:")
+        bot.register_next_step_handler(msg, get_price_guide_id)
+        
+    else:
+        bot.send_message(chat_id, "❌ Noto‘g‘ri tanlov.")
+        
+        
+
+def get_price_travel_id(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    PRICES[from_user_id]['travel_id'] = int(message.text)
+    msg = bot.send_message(chat_id, "Narx tavsifini kiriting (masalan: Kattalar uchun, Bolalar uchun): ")
+    bot.register_next_step_handler(msg, get_price_description)
+    
+
+def get_price_excursion_id(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    PRICES[from_user_id]['excursion_id'] = int(message.text)
+    msg = bot.send_message(chat_id, "Narx tavsifini kiriting:")
+    bot.register_next_step_handler(msg, get_price_description)
+    
+
+def get_price_guide_id(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    PRICES[from_user_id]['guide_id'] = int(message.text)
+    msg = bot.send_message(chat_id, "Narx tavsifini kiriting:")
+    bot.register_next_step_handler(msg, get_price_description)
+    
+    
+
+def get_price_description(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    PRICES[from_user_id]['description'] = message.text
+    msg = bot.send_message(chat_id, "Narx miqdorini kiriting (faqat son):")
+    bot.register_next_step_handler(msg, get_price_amount)
+    
+    
+
+def get_price_amount(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    
+    try:
+        PRICES[from_user_id]['amount'] = float(message.text)
+    except ValueError:
+        msg = bot.send_message(chat_id, "❌ Faqat raqam kiriting!")
+        bot.register_next_step_handler(msg, get_price_amount)
+        return
+    
+    msg = bot.send_message(chat_id, "Valyutani kiriting (default USD):")
+    bot.register_next_step_handler(msg, get_price_currency)
+    
+    
+
+def get_price_currency(message: Message):
+    chat_id = message.chat.id
+    from_user_id = message.from_user.id
+    
+    currency = message.text.strip().upper() if message.text else "USD"
+    PRICES[from_user_id]['currency'] = currency
+    
+    data = PRICES[from_user_id]
+    
+    
+    db.insert_price(
+        amount = data['amount'],
+        description = data['description'],
+        currency = data['currency'],
+        travel_id = data.get('travel_id'),
+        excursion_id = data.get('excursion_id'),
+        guide_id = data.get('guide_id')
+    )
+    
+    del PRICES[from_user_id]
+    bot.send_message(chat_id, "✅ Narx muvaffaqiyatli saqlandi!", reply_markup=make_buttons(admin_buttons_names, back=True))
+    
+    
+    
+    
+
+ 
         
 
 @bot.message_handler(regexp="⬅️Ortga")

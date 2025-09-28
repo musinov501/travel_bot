@@ -54,6 +54,28 @@ def reaction_to_packages(message: Message):
             bot.send_message(message.chat.id, "No guide available yet ❌")
     
     
+    elif message.text == TEXTS[lang][101][4]:
+        travels = db.select_travels(lang)
+        excursions = db.select_excursions(lang)
+        
+        
+        text = "Narxlarni qaysi kategoriya bo'yicha ko'rmoqchisiz? 👇"
+        markup = InlineKeyboardMarkup()
+        
+        
+        for t in travels:
+            markup.add(
+                InlineKeyboardButton(f"✈️ {t[1]}", callback_data=f"price_travel_{t[0]}")
+                )
+            
+        for e in excursions:
+            markup.add(
+                InlineKeyboardButton(f"🗺 {e[1]}", callback_data=f"price_excursion_{e[0]}")
+            )
+            
+        bot.send_message(chat_id, text, reply_markup=markup)
+        
+    
     elif message.text == TEXTS[lang][101][5]:
         msg = bot.send_message(chat_id, "Loc yuboring")
         bot.register_next_step_handler(msg, get_location)

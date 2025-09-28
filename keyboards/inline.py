@@ -122,7 +122,6 @@ def famous_places_buttons(lang = 'uz'):
     
     return markup
 
-
 def excursion_detail_buttons(excursion_id, guide=None):
     markup = InlineKeyboardMarkup()
     
@@ -134,14 +133,16 @@ def excursion_detail_buttons(excursion_id, guide=None):
                 InlineKeyboardButton(f"💬 Message {full_name}", url=f"https://t.me/{username}")
             )
         if phone:
+            
             markup.add(
-                InlineKeyboardButton(f"📞 Call {full_name}", url=f"tel:{phone}")
+                InlineKeyboardButton(f"📞 Call {full_name}", url=f"tg://resolve?phone={phone}")
             )
 
     back_btn = InlineKeyboardButton("⬅️ Back", callback_data="back_to_menu")
     markup.add(back_btn)
 
     return markup
+
 
 
 

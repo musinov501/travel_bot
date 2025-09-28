@@ -210,3 +210,55 @@ class Database:
                  JOIN excursion_guides eg ON g.id = eg.guide_id
                  WHERE eg.excursion_id = ?'''
         return self.execute(sql, (excursion_id,), fetchone=True)
+    
+    
+
+    # ===================================
+    #  PRICES
+    # ===================================
+    
+    def create_table_prices(self):
+        sql = '''CREATE TABLE IF NOT EXISTS prices(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            travel_id INTEGER,
+            excursion_id INTEGER,
+            guide_id INTEGER,
+            description TEXT, 
+            amount REAL NOT NULL,
+            currency TEXT DEFAULT 'USD',
+            FOREIGN KEY (travel_id) REFERENCES travels(id),
+            FOREIGN KEY (excursion_id) REFERENCES excursions(id),
+            FOREIGN KEY (guide_id) REFERENCES guides(id)
+            )'''
+            
+        self.execute(sql, commit=True)
+        
+        
+        
+    def insert_price(self, amount, description = "", currency="USD", travel_id=None, excursion_id=None, guide_id=None):
+        sql = '''INSERT INTO prices(amount, description, currency, travel_id, excursion_id, guide_id)
+        VALUES(?, ?, ?, ?, ? , ?)'''
+        self.execute(sql, (amount, description, currency, travel_id, excursion_id, guide_id), commit=True)
+        return self.execute('SELECT last_insert_rowid()', fetchone=True)[0]
+    
+    
+    
+    
+    def select_prices_by_travel(self, travel_id):
+        sql = 'SELECT id , amount, currency, description FROM prices WHERE travel_id = ?'
+        return self.execute(sql, (travel_id,), fetchall=True)
+    
+    
+    def select_prices_by_excursion(self, excursion_id):
+        sql = 'SELECT id, amount, currency, description FROM prices WHERE excursion_id = ?'
+        return self.execute(sql, (excursion_id,), fetchall=True)
+
+    
+    def select_prices_by_guide(self, guide_id):
+        sql = 'SELECT id, amount, currency, description FROM prices WHERE guide_id = ?'
+        return self.execute(sql, (guide_id,), fetchall=True)
+    
+    
+    
+    
+    

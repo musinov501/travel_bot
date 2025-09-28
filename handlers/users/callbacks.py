@@ -210,29 +210,73 @@ def famous_place_info(call: CallbackQuery):
 
 
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith("famous_"))
-def show_famous_place(call: CallbackQuery):
+@bot.callback_query_handler(func=lambda call: call.data.startswith("price_"))
+def callback_show_prices(call):
     chat_id = call.message.chat.id
-    lang = db.get_lang(call.from_user.id)
-    place_id = int(call.data.split("_")[1])
+    from_user_id = call.message.from_user.id
+    lang = db.get_lang(from_user_id)
     
-    place = db.select_famous_places(lang)
-    for p in place:
-        if p[0] == place_id:
-            text = f"🏛 {p[1]}\n\n{p[2]}"
-            bot.edit_message_text(
-                chat_id=chat_id,
-                message_id=call.message.message_id,
-                text=text,
-                parse_mode="Markdown",
-                reply_markup=None
-            )
+    parts = call.data.split('_')
+    price_type = parts[1]
+    obj_id = int(parts[2])
+    
+    
+    if price_type == 'travel':
+        prices = db.select_prices_by_travel(obj_id)
+        if not prices:
+            bot.send_message(chat_id, "❌ Bu sayohat uchun narxlar mavjud emas.")
+            return
+        
+        text = f"✈️ Sayohat narxlari:\n\n"
+        for p in prices:
+            text += f"▪️ {p[3]}: {p[1]} {p[2]}\n"
+            
+    elif price_type == 'excursion':
+        prices = db.select_prices_by_excursion(obj_id)
+        if not prices:
+            bot.send_message(chat_id, "❌ Bu ekskursiya uchun narxlar mavjud emas.")
+            return
+        
+        
+        text = f"🗺 Ekskursiya narxlari:\n\n"
+        for p in prices:
+            text += f"▪️ {p[3]}: {p[1]} {p[2]}\n"
+            
+    elif price_type == 'guide':
+        prices = db.select_prices_by_guide(obj_id)
+        if not prices:
+            bot.send_message(chat_id, "❌ Bu ekskursiya uchun narxlar mavjud emas.")
+            return
+        
+        
+        text = f"🙎‍♂️ Gid narxlari:\n\n"
+        for p in prices:
+            text += f"▪️ {p[3]}: {p[1]} {p[2]}\n"
+            
+    
+    bot.send_message(chat_id, text)
+    
+    
+    
+
 
 
 @bot.callback_query_handler(func=lambda call: call.data == "back_to_menu")
 def back_to_menu(call: CallbackQuery):
     chat_id = call.message.chat.id
-    lang = db.get_lang(call.from_user.id)
-    markup = excursions_buttons(lang) 
-    bot.edit_message_text(chat_id, call.message.message_id, TEXTS[lang][101][1], reply_markup=markup)
+    from_user_id = call.message.from_user.id
+    lang = db.get_lang(from_user_id)
+    
+   
+    bot.delete_message(chat_id, call.message.message_id)
+
+   
+    bot.send_message(
+        chat_id,
+        TEXTS[lang][4],
+        reply_markup=make_buttons(TEXTS[lang][101])  
+    )
+
+
+
 

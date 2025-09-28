@@ -16,7 +16,9 @@ if __name__ == '__main__':
     db.create_table_excursions()
     db.create_table_guides()
     db.create_table_excursion_guides()
+    db.create_table_prices()
     db.insert_guide("Musinov Muhammadyor", "+998911587777", 'musinov_501')
     db.assign_guide_to_excursion(1, 1)
     bot.remove_webhook()
     bot.infinity_polling()
+    
